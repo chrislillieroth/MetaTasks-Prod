@@ -1,0 +1,81 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "metatasks"
+version = "0.1.0"
+description = "MetaTasks Platform - Multi-tenant workflow & resource management"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django>=5.0,<5.1",
+    "djangorestframework>=3.14.0",
+    "channels>=4.0.0",
+    "channels-redis>=4.1.0",
+    "celery>=5.3.0",
+    "redis>=5.0.0",
+    "psycopg[binary]>=3.1.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "structlog>=23.1.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-django>=4.5.0",
+    "pytest-cov>=4.1.0",
+    "pytest-asyncio>=0.21.0",
+    "httpx>=0.24.0",
+    "ruff>=0.1.0",
+    "mypy>=1.5.0",
+    "django-stubs>=4.2.0",
+    "djangorestframework-stubs>=3.14.0",
+    "import-linter>=2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["config*", "apps*", "metatasks_lib*"]
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings.dev"
+python_files = ["test_*.py", "*_test.py", "tests.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+testpaths = ["tests"]
+addopts = [
+    "--cov=apps",
+    "--cov=config",
+    "--cov=metatasks_lib",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "-v",
+]
+
+# Override database settings for tests
+[tool.pytest.ini_options.env]
+DB_ENGINE = "django.db.backends.sqlite3"
+
+[tool.coverage.run]
+source = ["apps", "config", "metatasks_lib"]
+omit = [
+    "*/migrations/*",
+    "*/tests/*",
+    "*/test_*.py",
+    "*/__pycache__/*",
+    "*/node_modules/*",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "@abstractmethod",
+]

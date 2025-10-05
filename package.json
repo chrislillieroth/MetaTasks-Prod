@@ -1,0 +1,21 @@
+{
+  "name": "metatasks",
+  "version": "0.1.0",
+  "description": "MetaTasks Platform Frontend",
+  "private": true,
+  "scripts": {
+    "build": "npm run build:css",
+    "build:css": "tailwindcss -i ./apps/ui/static/css/base.css -o ./static_build/css/styles.css --minify",
+    "watch": "tailwindcss -i ./apps/ui/static/css/base.css -o ./static_build/css/styles.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.3.0",
+    "@tailwindcss/forms": "^0.5.0",
+    "postcss": "^8.4.0",
+    "autoprefixer": "^10.4.0"
+  },
+  "dependencies": {
+    "htmx.org": "^1.9.0",
+    "alpinejs": "^3.13.0"
+  }
+}

@@ -1,0 +1,16 @@
+/* Base CSS for MetaTasks UI */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS variables for theming */
+:root {
+  --color-accent: #3b82f6;
+  --color-danger: #ef4444;
+  --color-surface: #ffffff;
+}
+
+.dark {
+  --color-surface: #1f2937;
+}

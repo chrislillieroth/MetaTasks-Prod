@@ -1,0 +1,29 @@
+[importlinter]
+root_package = apps
+
+[importlinter:contract:layers]
+name = Enforce layered architecture
+type = layers
+layers =
+    apps.ui
+    apps.api
+    apps.realtime
+    apps.analytics
+    apps.billing
+    apps.audit
+    apps.integrations
+    apps.notifications
+    apps.scheduling
+    apps.workflows
+    apps.licensing
+    apps.organizations
+    apps.accounts
+    apps.common
+
+[importlinter:contract:no-config-import]
+name = Apps must not import config
+type = forbidden
+source_modules =
+    apps.*
+forbidden_modules =
+    config.*
