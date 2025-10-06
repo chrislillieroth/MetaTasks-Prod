@@ -8,7 +8,14 @@ from .dev import *  # noqa: F403
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": ":memory:",
+        "NAME": BASE_DIR / "db.sqlite3",  # noqa: F405
+    }
+}
+
+# Use in-memory channel layer for testing
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     }
 }
 
@@ -17,13 +24,14 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.MD5PasswordHasher",
 ]
 
-# Disable migrations for faster tests
-class DisableMigrations:
-    def __contains__(self, item):
-        return True
+# Disable migrations for faster tests (comment out if needed)
+# class DisableMigrations:
+#     def __contains__(self, item):
+#         return True
+#
+#     def __getitem__(self, item):
+#         return None
+#
+#
+# MIGRATION_MODULES = DisableMigrations()
 
-    def __getitem__(self, item):
-        return None
-
-
-MIGRATION_MODULES = DisableMigrations()

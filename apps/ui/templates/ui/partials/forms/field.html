@@ -1,0 +1,76 @@
+{# Form Field Component
+   Usage: {% include 'ui/partials/forms/field.html' with type='text' name='username' label='Username' %}
+   
+   Required: type, name, label
+   Optional: value, placeholder, required, error, help_text
+   Types: text, email, password, textarea, select, checkbox
+#}
+
+<div class="space-y-1">
+   {% if type != 'checkbox' %}
+   <label for="id_{{ name }}" class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      {{ label }}
+      {% if required %}<span class="text-red-500">*</span>{% endif %}
+   </label>
+   {% endif %}
+   
+   {% if type == 'textarea' %}
+   <textarea id="id_{{ name }}" 
+             name="{{ name }}" 
+             rows="{{ rows|default:4 }}"
+             class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm
+             {% if error %}border-red-300 focus:border-red-500 focus:ring-red-500{% endif %}"
+             {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+             {% if required %}required{% endif %}
+             {% if disabled %}disabled{% endif %}>{{ value }}</textarea>
+   
+   {% elif type == 'select' %}
+   <select id="id_{{ name }}" 
+           name="{{ name }}"
+           class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm
+           {% if error %}border-red-300 focus:border-red-500 focus:ring-red-500{% endif %}"
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}>
+      {% if placeholder %}
+      <option value="">{{ placeholder }}</option>
+      {% endif %}
+      {% for option in options %}
+      <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %}>{{ option.label }}</option>
+      {% endfor %}
+   </select>
+   
+   {% elif type == 'checkbox' %}
+   <div class="flex items-center">
+      <input id="id_{{ name }}" 
+             name="{{ name }}" 
+             type="checkbox" 
+             {% if value %}checked{% endif %}
+             class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+             {% if required %}required{% endif %}
+             {% if disabled %}disabled{% endif %}>
+      <label for="id_{{ name }}" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+         {{ label }}
+         {% if required %}<span class="text-red-500">*</span>{% endif %}
+      </label>
+   </div>
+   
+   {% else %}
+   <input id="id_{{ name }}" 
+          name="{{ name }}" 
+          type="{{ type|default:'text' }}" 
+          {% if value %}value="{{ value }}"{% endif %}
+          class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm
+          {% if error %}border-red-300 focus:border-red-500 focus:ring-red-500{% endif %}"
+          {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+          {% if required %}required{% endif %}
+          {% if disabled %}disabled{% endif %}>
+   {% endif %}
+   
+   {% if error %}
+   <p class="mt-1 text-sm text-red-600 dark:text-red-400" role="alert">{{ error }}</p>
+   {% endif %}
+   
+   {% if help_text and not error %}
+   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ help_text }}</p>
+   {% endif %}
+</div>

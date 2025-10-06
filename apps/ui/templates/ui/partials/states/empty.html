@@ -1,0 +1,31 @@
+{# Empty State Component
+   Usage: {% include 'ui/partials/states/empty.html' with title='No items found' message='Get started by creating your first item.' %}
+   
+   Optional: icon, action_url, action_label
+#}
+
+<div class="text-center py-12">
+   <div class="mx-auto h-12 w-12 text-gray-400">
+      {% if icon %}
+         {{ icon|safe }}
+      {% else %}
+      <svg class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+      </svg>
+      {% endif %}
+   </div>
+   <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-white">{{ title|default:"No items" }}</h3>
+   {% if message %}
+   <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ message }}</p>
+   {% endif %}
+   {% if action_url and action_label %}
+   <div class="mt-6">
+      <a href="{{ action_url }}" class="inline-flex items-center rounded-md bg-blue-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600">
+         <svg class="-ml-0.5 mr-1.5 h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z" />
+         </svg>
+         {{ action_label }}
+      </a>
+   </div>
+   {% endif %}
+</div>
