@@ -1,0 +1,125 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block page_actions %}
+    {% render_button 'New Workflow' 'primary' 'md' icon='plus' href='/workflows/create/' %}
+{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    {# Stats Cards #}
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {# Total Work Items #}
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 bg-blue-100 dark:bg-blue-900 rounded-md">
+                            {% icon 'menu' 'w-6 h-6 text-blue-600 dark:text-blue-400' %}
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Total Work Items
+                            </dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ stats.total_workitems }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {# Active Workflows #}
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 bg-green-100 dark:bg-green-900 rounded-md">
+                            <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Active Workflows
+                            </dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ stats.active_workflows }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {# Team Members #}
+        <div class="card">
+            <div class="card-body">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <div class="p-3 bg-purple-100 dark:bg-purple-900 rounded-md">
+                            {% icon 'user' 'w-6 h-6 text-purple-600 dark:text-purple-400' %}
+                        </div>
+                    </div>
+                    <div class="ml-5 w-0 flex-1">
+                        <dl>
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
+                                Team Members
+                            </dt>
+                            <dd class="flex items-baseline">
+                                <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+                                    {{ stats.team_members }}
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {# Recent Work Items #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Recent Work Items</h2>
+        </div>
+        <div class="card-body p-0">
+            {% if recent_workitems %}
+            <div class="table-container">
+                <table class="table">
+                    <thead class="table-header">
+                        <tr>
+                            <th class="table-header-cell">Title</th>
+                            <th class="table-header-cell">Status</th>
+                            <th class="table-header-cell">Assigned To</th>
+                            <th class="table-header-cell">Created</th>
+                            <th class="table-header-cell">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="table-body">
+                        {% for item in recent_workitems %}
+                        {% include 'ui/partials/workflows/workitem_row.html' with workitem=item %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            {% include 'ui/components/empty_state.html' with title='No work items yet' description='Get started by creating your first workflow and work items.' action_label='Create Workflow' action_url='/workflows/create/' %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

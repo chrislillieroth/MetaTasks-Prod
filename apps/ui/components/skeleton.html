@@ -1,0 +1,39 @@
+{% comment %}
+Loading Skeleton Component
+Usage: {% include 'ui/components/skeleton.html' with type='card' count=3 %}
+
+Types: text, title, card, table, avatar
+{% endcomment %}
+
+{% if type == 'card' %}
+<div class="card animate-pulse">
+    <div class="card-body space-y-4">
+        <div class="skeleton-title"></div>
+        <div class="skeleton-text"></div>
+        <div class="skeleton-text w-3/4"></div>
+    </div>
+</div>
+{% elif type == 'table' %}
+<div class="space-y-3">
+    {% for i in "123"|make_list %}
+    <div class="flex items-center space-x-4 animate-pulse">
+        <div class="skeleton rounded-full h-10 w-10"></div>
+        <div class="flex-1 space-y-2">
+            <div class="skeleton-text"></div>
+            <div class="skeleton-text w-5/6"></div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% elif type == 'title' %}
+<div class="skeleton-title animate-pulse"></div>
+{% elif type == 'avatar' %}
+<div class="skeleton rounded-full h-10 w-10 animate-pulse"></div>
+{% else %}
+{# Default: text #}
+<div class="space-y-2">
+    {% for i in count|default:"3"|make_list %}
+    <div class="skeleton-text animate-pulse"></div>
+    {% endfor %}
+</div>
+{% endif %}

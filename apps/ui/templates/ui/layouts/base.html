@@ -1,0 +1,110 @@
+{% load static %}
+{% load ui_components %}
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{% block meta_description %}MetaTasks - Multi-tenant workflow and resource management platform{% endblock %}">
+    
+    <title>{% block title %}MetaTasks{% endblock %} | MetaTasks Platform</title>
+    
+    {# Preconnect to CDN if needed #}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    {# Skip to main content link for accessibility #}
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    {# CSS #}
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100" x-data>
+    
+    {# Toast container for notifications #}
+    <div id="toast-container" class="toast-container" aria-live="polite" aria-atomic="true"></div>
+    
+    {# WebSocket initialization for authenticated users #}
+    {% if user.is_authenticated %}
+    <div data-websocket-url="ws://{{ request.get_host }}/ws/notifications/" class="hidden"></div>
+    {% endif %}
+    
+    {# Main layout wrapper #}
+    <div class="min-h-full">
+        {# Navigation Header #}
+        {% include 'ui/partials/header.html' %}
+        
+        {# Sidebar for authenticated users #}
+        {% if user.is_authenticated %}
+        <div class="flex">
+            {% include 'ui/partials/sidebar.html' %}
+            
+            {# Main content area #}
+            <main id="main-content" class="flex-1 px-4 sm:px-6 lg:px-8 py-8" role="main">
+                {# Breadcrumbs #}
+                {% block breadcrumbs %}{% endblock %}
+                
+                {# Page header #}
+                {% block page_header %}
+                <div class="md:flex md:items-center md:justify-between mb-6">
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:text-3xl sm:truncate">
+                            {% block page_title %}Dashboard{% endblock %}
+                        </h1>
+                    </div>
+                    <div class="mt-4 flex md:mt-0 md:ml-4">
+                        {% block page_actions %}{% endblock %}
+                    </div>
+                </div>
+                {% endblock %}
+                
+                {# Flash messages #}
+                {% if messages %}
+                <div class="mb-6 space-y-2">
+                    {% for message in messages %}
+                    {% alert message.message message.tags|default:"info" dismissible=True %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+                {# Main page content #}
+                {% block content %}{% endblock %}
+            </main>
+        </div>
+        {% else %}
+        {# Unauthenticated layout (no sidebar) #}
+        <main id="main-content" class="flex-1 px-4 sm:px-6 lg:px-8 py-8" role="main">
+            {% block content %}{% endblock %}
+        </main>
+        {% endif %}
+        
+        {# Footer #}
+        {% include 'ui/partials/footer.html' %}
+    </div>
+    
+    {# JavaScript - Progressive Enhancement #}
+    {# Core libraries from node_modules #}
+    <script src="{% static 'node_modules/htmx.org/dist/htmx.min.js' %}" defer></script>
+    <script src="{% static 'node_modules/alpinejs/dist/cdn.min.js' %}" defer></script>
+    
+    {# Custom scripts #}
+    <script src="{% static 'js/alpine-init.js' %}" defer></script>
+    <script src="{% static 'js/htmx-config.js' %}" defer></script>
+    <script src="{% static 'js/websocket.js' %}" defer></script>
+    <script src="{% static 'js/analytics.js' %}" defer></script>
+    
+    {% block extra_js %}{% endblock %}
+    
+    {# Initialize theme on page load #}
+    <script>
+        // Apply theme immediately to prevent flash
+        (function() {
+            const theme = localStorage.getItem('theme');
+            if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
+</body>
+</html>
