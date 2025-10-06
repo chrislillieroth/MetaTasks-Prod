@@ -1,0 +1,35 @@
+{# Badge Component
+   Usage: {% include 'ui/components/badge.html' with status='success' label='Active' %}
+   
+   Status: success, warning, danger, info, neutral
+   Optional: size (sm, md, lg)
+#}
+
+<span class="inline-flex items-center rounded-full font-medium
+   {% if status == 'success' %}
+      bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200
+   {% elif status == 'warning' %}
+      bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200
+   {% elif status == 'danger' or status == 'error' %}
+      bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200
+   {% elif status == 'info' %}
+      bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200
+   {% elif status == 'neutral' or status == 'default' %}
+      bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200
+   {% else %}
+      bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200
+   {% endif %}
+   {% if size == 'sm' %}
+      px-2 py-0.5 text-xs
+   {% elif size == 'lg' %}
+      px-3 py-1 text-sm
+   {% else %}
+      px-2.5 py-0.5 text-xs
+   {% endif %}">
+   {% if dot %}
+   <svg class="-ml-0.5 mr-1.5 h-2 w-2 fill-current" viewBox="0 0 6 6" aria-hidden="true">
+      <circle cx="3" cy="3" r="3" />
+   </svg>
+   {% endif %}
+   {{ label }}
+</span>

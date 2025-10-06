@@ -1,0 +1,54 @@
+{# Progress/Usage Meter Component
+   Usage: {% include 'ui/components/progress.html' with current=750 limit=1000 label='Work Items' %}
+   
+   Required: current, limit
+   Optional: label, show_percentage, show_text
+#}
+
+<div class="space-y-2">
+   {% if label or show_text %}
+   <div class="flex items-center justify-between text-sm">
+      {% if label %}
+      <span class="font-medium text-gray-900 dark:text-white">{{ label }}</span>
+      {% endif %}
+      {% if show_text %}
+      <span class="text-gray-500 dark:text-gray-400">
+         {{ current }} of {{ limit }} used
+         {% if show_percentage %}
+         ({% widthratio current limit 100 %}%)
+         {% endif %}
+      </span>
+      {% endif %}
+   </div>
+   {% endif %}
+   
+   <!-- Progress bar -->
+   <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
+      <div class="h-full rounded-full transition-all duration-500 ease-out
+         {% widthratio current limit 100 as percentage %}
+         {% if percentage >= 90 %}
+            bg-red-600
+         {% elif percentage >= 70 %}
+            bg-yellow-500
+         {% else %}
+            bg-green-600
+         {% endif %}"
+         style="width: {% widthratio current limit 100 %}%"
+         role="progressbar"
+         aria-valuenow="{{ current }}"
+         aria-valuemin="0"
+         aria-valuemax="{{ limit }}">
+      </div>
+   </div>
+   
+   {% widthratio current limit 100 as percentage %}
+   {% if percentage >= 90 %}
+   <p class="text-xs text-red-600 dark:text-red-400 font-medium">
+      Critical: Near limit - consider upgrading your plan
+   </p>
+   {% elif percentage >= 70 %}
+   <p class="text-xs text-yellow-600 dark:text-yellow-400 font-medium">
+      Warning: Approaching limit
+   </p>
+   {% endif %}
+</div>

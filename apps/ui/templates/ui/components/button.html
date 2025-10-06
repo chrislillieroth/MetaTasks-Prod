@@ -1,0 +1,90 @@
+{# Button Component
+   Usage: {% include 'ui/components/button.html' with variant='primary' size='md' label='Click me' %}
+   
+   Variants: primary, secondary, danger, success, ghost, subtle
+   Sizes: xs, sm, md, lg, xl
+   Optional: icon, href, type, disabled, htmx_attrs
+#}
+
+{% if href %}
+<a href="{{ href }}" 
+   class="inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+   {% if variant == 'primary' %}
+      bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-400
+   {% elif variant == 'secondary' %}
+      bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 disabled:bg-gray-400
+   {% elif variant == 'danger' %}
+      bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-400
+   {% elif variant == 'success' %}
+      bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-400
+   {% elif variant == 'ghost' %}
+      bg-transparent text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500
+   {% elif variant == 'subtle' %}
+      bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-500
+   {% else %}
+      bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500
+   {% endif %}
+   {% if size == 'xs' %}
+      px-2.5 py-1.5 text-xs
+   {% elif size == 'sm' %}
+      px-3 py-2 text-sm
+   {% elif size == 'md' %}
+      px-4 py-2 text-sm
+   {% elif size == 'lg' %}
+      px-4 py-2 text-base
+   {% elif size == 'xl' %}
+      px-6 py-3 text-base
+   {% else %}
+      px-4 py-2 text-sm
+   {% endif %}
+   {% if disabled %}pointer-events-none opacity-50{% endif %}"
+   {% if disabled %}aria-disabled="true"{% endif %}
+   {{ htmx_attrs|safe }}>
+   {% if icon %}
+   <svg class="{% if size == 'xs' %}h-3 w-3{% elif size == 'sm' %}h-4 w-4{% else %}h-5 w-5{% endif %} {% if label %}-ml-1 mr-2{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {{ icon|safe }}
+   </svg>
+   {% endif %}
+   {{ label }}
+</a>
+{% else %}
+<button type="{{ type|default:'button' }}" 
+   class="inline-flex items-center justify-center font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2
+   {% if variant == 'primary' %}
+      bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500 disabled:bg-blue-400
+   {% elif variant == 'secondary' %}
+      bg-gray-600 text-white hover:bg-gray-700 focus:ring-gray-500 disabled:bg-gray-400
+   {% elif variant == 'danger' %}
+      bg-red-600 text-white hover:bg-red-700 focus:ring-red-500 disabled:bg-red-400
+   {% elif variant == 'success' %}
+      bg-green-600 text-white hover:bg-green-700 focus:ring-green-500 disabled:bg-green-400
+   {% elif variant == 'ghost' %}
+      bg-transparent text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 focus:ring-gray-500
+   {% elif variant == 'subtle' %}
+      bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-gray-700 focus:ring-gray-500
+   {% else %}
+      bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500
+   {% endif %}
+   {% if size == 'xs' %}
+      px-2.5 py-1.5 text-xs
+   {% elif size == 'sm' %}
+      px-3 py-2 text-sm
+   {% elif size == 'md' %}
+      px-4 py-2 text-sm
+   {% elif size == 'lg' %}
+      px-4 py-2 text-base
+   {% elif size == 'xl' %}
+      px-6 py-3 text-base
+   {% else %}
+      px-4 py-2 text-sm
+   {% endif %}"
+   {% if disabled %}disabled{% endif %}
+   {{ htmx_attrs|safe }}>
+   {% if icon %}
+   <svg class="{% if size == 'xs' %}h-3 w-3{% elif size == 'sm' %}h-4 w-4{% else %}h-5 w-5{% endif %} {% if label %}-ml-1 mr-2{% endif %}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      {{ icon|safe }}
+   </svg>
+   {% endif %}
+   {{ label }}
+</button>
+{% endif %}
