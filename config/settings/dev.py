@@ -16,6 +16,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
+# Authentication
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'
+
 # Database
 # Use SQLite for local development if PostgreSQL is not available
 if os.getenv("USE_SQLITE", "true").lower() == "true":

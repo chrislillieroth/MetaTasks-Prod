@@ -1,0 +1,35 @@
+{# Button component - Usage: {% include "ui/components/button.html" with label="Click me" variant="primary" %} #}
+{% if href %}
+<a href="{{ href }}" 
+   class="inline-flex items-center justify-center gap-x-2 rounded-md px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+   {% if variant == 'primary' or not variant %}
+       bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400
+   {% elif variant == 'secondary' %}
+       bg-white dark:bg-gray-800 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700
+   {% elif variant == 'danger' %}
+       bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600 dark:bg-red-500 dark:hover:bg-red-400
+   {% elif variant == 'ghost' %}
+       text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700
+   {% endif %}
+   {% if disabled %}opacity-50 cursor-not-allowed{% endif %}">
+    {% if icon %}{{ icon|safe }}{% endif %}
+    {{ label }}
+</a>
+{% else %}
+<button type="{{ type|default:'button' }}" 
+        {% if disabled %}disabled{% endif %}
+        class="inline-flex items-center justify-center gap-x-2 rounded-md px-3.5 py-2.5 text-sm font-semibold shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2
+        {% if variant == 'primary' or not variant %}
+            bg-blue-600 text-white hover:bg-blue-500 focus-visible:outline-blue-600 dark:bg-blue-500 dark:hover:bg-blue-400
+        {% elif variant == 'secondary' %}
+            bg-white dark:bg-gray-800 text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700
+        {% elif variant == 'danger' %}
+            bg-red-600 text-white hover:bg-red-500 focus-visible:outline-red-600 dark:bg-red-500 dark:hover:bg-red-400
+        {% elif variant == 'ghost' %}
+            text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700
+        {% endif %}
+        {% if disabled %}opacity-50 cursor-not-allowed{% endif %}">
+    {% if icon %}{{ icon|safe }}{% endif %}
+    {{ label }}
+</button>
+{% endif %}

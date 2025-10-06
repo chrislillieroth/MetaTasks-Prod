@@ -1,0 +1,88 @@
+{% extends "ui/layouts/dashboard.html" %}
+
+{% block title %}Dashboard - MetaTasks{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
+                Dashboard
+            </h2>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0">
+            {% include "ui/components/button.html" with label="New Workflow" variant="primary" href="/workflows/new/" %}
+        </div>
+    </div>
+
+    <!-- Stats cards -->
+    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <!-- Total Workflows -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Total Workflows</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ stats.total_workflows }}</dd>
+        </div>
+
+        <!-- Active Items -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Active Items</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ stats.active_items }}</dd>
+        </div>
+
+        <!-- Completed Today -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Completed Today</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ stats.completed_today }}</dd>
+        </div>
+
+        <!-- Team Members -->
+        <div class="overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 py-5 shadow sm:p-6">
+            <dt class="truncate text-sm font-medium text-gray-500 dark:text-gray-400">Team Members</dt>
+            <dd class="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-white">{{ stats.team_members }}</dd>
+        </div>
+    </div>
+
+    <!-- Recent activity -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Recent Work Items</h3>
+            <div class="mt-6 flow-root">
+                <ul role="list" class="-my-5 divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for item in recent_items %}
+                    <li class="py-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex-1 min-w-0">
+                                <p class="truncate text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ item.title }}
+                                </p>
+                                <p class="truncate text-sm text-gray-500 dark:text-gray-400">
+                                    Assigned to {{ item.assignee }}
+                                </p>
+                            </div>
+                            <div>
+                                <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium 
+                                    {% if item.status == 'Completed' %}
+                                        bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400
+                                    {% elif item.status == 'In Progress' %}
+                                        bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400
+                                    {% else %}
+                                        bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400
+                                    {% endif %}">
+                                    {{ item.status }}
+                                </span>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="mt-6">
+                <a href="{% url 'ui:work_items' %}" class="flex w-full items-center justify-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    View all
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

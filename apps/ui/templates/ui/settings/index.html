@@ -1,0 +1,101 @@
+{% extends "ui/layouts/dashboard.html" %}
+
+{% block title %}Settings - MetaTasks{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
+                Settings
+            </h2>
+        </div>
+    </div>
+
+    <!-- Settings sections -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 sm:rounded-lg divide-y divide-gray-200 dark:divide-gray-700">
+        <!-- Appearance -->
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Appearance</h3>
+            <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-400">
+                Customize how MetaTasks looks on your device.
+            </p>
+            <div class="mt-4" x-data="{ theme: localStorage.getItem('darkMode') === 'true' ? 'dark' : 'light' }">
+                <fieldset>
+                    <legend class="sr-only">Theme</legend>
+                    <div class="space-y-4">
+                        <div class="flex items-center">
+                            <input id="theme-light" 
+                                   name="theme" 
+                                   type="radio" 
+                                   value="light"
+                                   x-model="theme"
+                                   @change="darkMode = false"
+                                   class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600">
+                            <label for="theme-light" class="ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+                                Light
+                            </label>
+                        </div>
+                        <div class="flex items-center">
+                            <input id="theme-dark" 
+                                   name="theme" 
+                                   type="radio" 
+                                   value="dark"
+                                   x-model="theme"
+                                   @change="darkMode = true"
+                                   class="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-600">
+                            <label for="theme-dark" class="ml-3 block text-sm font-medium leading-6 text-gray-900 dark:text-white">
+                                Dark
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">Notifications</h3>
+            <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-400">
+                Manage your notification preferences.
+            </p>
+            <div class="mt-4 space-y-4">
+                <div class="flex items-start">
+                    <div class="flex h-6 items-center">
+                        <input id="email-notifications" 
+                               type="checkbox" 
+                               checked
+                               class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                        <label for="email-notifications" class="font-medium text-gray-900 dark:text-white">Email notifications</label>
+                        <p class="text-gray-500 dark:text-gray-400">Get notified about important updates via email.</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <div class="flex h-6 items-center">
+                        <input id="push-notifications" 
+                               type="checkbox"
+                               class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-600">
+                    </div>
+                    <div class="ml-3 text-sm leading-6">
+                        <label for="push-notifications" class="font-medium text-gray-900 dark:text-white">Push notifications</label>
+                        <p class="text-gray-500 dark:text-gray-400">Receive push notifications in your browser.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Danger Zone -->
+        <div class="px-4 py-5 sm:p-6">
+            <h3 class="text-base font-semibold leading-6 text-red-600 dark:text-red-400">Danger Zone</h3>
+            <p class="mt-2 max-w-xl text-sm text-gray-500 dark:text-gray-400">
+                Irreversible and destructive actions.
+            </p>
+            <div class="mt-4">
+                {% include "ui/components/button.html" with label="Delete Account" variant="danger" %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
