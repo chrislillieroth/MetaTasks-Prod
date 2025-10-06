@@ -1,0 +1,115 @@
+{% extends "ui/layouts/dashboard.html" %}
+
+{% block title %}Work Items - MetaTasks{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <!-- Page header -->
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
+                Work Items
+            </h2>
+        </div>
+        <div class="mt-4 flex md:ml-4 md:mt-0 gap-3">
+            <div class="relative" x-data="{ open: false }">
+                <button type="button" 
+                        @click="open = !open"
+                        class="inline-flex items-center rounded-md bg-white dark:bg-gray-700 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600">
+                    Filter
+                    <svg class="-mr-1 ml-2 h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div x-show="open" 
+                     x-cloak
+                     @click.away="open = false"
+                     class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                    <div class="py-1">
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">All Items</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">In Progress</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">Completed</a>
+                    </div>
+                </div>
+            </div>
+            {% include "ui/components/button.html" with label="New Item" variant="primary" %}
+        </div>
+    </div>
+
+    <!-- Work items table -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="flow-root">
+                <div class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="inline-block min-w-full py-2 align-middle sm:px-6 lg:px-8">
+                        <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+                            <thead>
+                                <tr>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-white sm:pl-0">
+                                        Title
+                                    </th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                                        Workflow
+                                    </th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-white">
+                                        Priority
+                                    </th>
+                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-0">
+                                        <span class="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                {% for item in work_items %}
+                                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-white sm:pl-0">
+                                        <a href="#" class="hover:text-blue-600 dark:hover:text-blue-400">
+                                            {{ item.title }}
+                                        </a>
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
+                                        {{ item.workflow }}
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium
+                                            {% if item.status == 'Completed' %}
+                                                bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400
+                                            {% elif item.status == 'In Progress' %}
+                                                bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400
+                                            {% else %}
+                                                bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400
+                                            {% endif %}">
+                                            {{ item.status }}
+                                        </span>
+                                    </td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm">
+                                        <span class="inline-flex items-center rounded-md px-2 py-1 text-xs font-medium
+                                            {% if item.priority == 'High' %}
+                                                bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400
+                                            {% elif item.priority == 'Medium' %}
+                                                bg-yellow-100 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400
+                                            {% else %}
+                                                bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-400
+                                            {% endif %}">
+                                            {{ item.priority }}
+                                        </span>
+                                    </td>
+                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
+                                        <a href="#" class="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+                                            Edit<span class="sr-only">, {{ item.title }}</span>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "ui/layouts/dashboard.html" %}
+
+{% block title %}Profile - MetaTasks{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    <div class="md:flex md:items-center md:justify-between">
+        <div class="min-w-0 flex-1">
+            <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-white sm:truncate sm:text-3xl sm:tracking-tight">
+                Profile
+            </h2>
+        </div>
+    </div>
+
+    <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 dark:ring-gray-700 sm:rounded-lg">
+        <div class="px-4 py-5 sm:p-6">
+            <div class="space-y-6">
+                <div class="flex items-center gap-x-4">
+                    <div class="h-20 w-20 rounded-full bg-blue-600 flex items-center justify-center">
+                        <span class="text-2xl font-medium text-white">{{ user.username.0|upper }}</span>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ user.get_full_name|default:user.username }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-6">
+                    <dl class="divide-y divide-gray-200 dark:divide-gray-700">
+                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Username</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{{ user.username }}</dd>
+                        </div>
+                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Email address</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{{ user.email }}</dd>
+                        </div>
+                        <div class="py-4 sm:grid sm:grid-cols-3 sm:gap-4">
+                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Member since</dt>
+                            <dd class="mt-1 text-sm text-gray-900 dark:text-white sm:col-span-2 sm:mt-0">{{ user.date_joined|date:"F j, Y" }}</dd>
+                        </div>
+                    </dl>
+                </div>
+
+                <div class="flex gap-3">
+                    {% include "ui/components/button.html" with label="Edit Profile" variant="primary" %}
+                    {% include "ui/components/button.html" with label="Change Password" variant="secondary" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
