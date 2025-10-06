@@ -1,0 +1,18 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Scheduling{% endblock %}
+
+{% block page_title %}Team Scheduling{% endblock %}
+
+{% block page_actions %}
+    {% render_button 'New Booking' 'primary' 'md' icon='plus' %}
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% include 'ui/components/empty_state.html' with title='Scheduling Coming Soon' description='Team capacity and booking features will be available soon.' icon='menu' %}
+    </div>
+</div>
+{% endblock %}

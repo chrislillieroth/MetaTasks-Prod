@@ -1,0 +1,44 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Licensing{% endblock %}
+
+{% block page_title %}Licensing & Usage{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+    {# Current Plan #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Current Plan</h2>
+        </div>
+        <div class="card-body">
+            {% if current_plan %}
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ current_plan.name }}</h3>
+                    <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">{{ current_plan.description }}</p>
+                </div>
+                <div>
+                    {% render_button 'Upgrade Plan' 'primary' 'md' %}
+                </div>
+            </div>
+            {% else %}
+            <p class="text-gray-600 dark:text-gray-400">No active plan. Please contact support.</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    {# Usage Meters #}
+    <div class="card">
+        <div class="card-header">
+            <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100">Resource Usage</h2>
+        </div>
+        <div class="card-body space-y-6">
+            {% usage_meter 150 200 label='Work Items' %}
+            {% usage_meter 8 10 label='Team Members' %}
+            {% usage_meter 450 500 label='Storage (MB)' %}
+        </div>
+    </div>
+</div>
+{% endblock %}

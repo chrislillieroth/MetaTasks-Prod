@@ -1,0 +1,62 @@
+{% comment %}
+Modal Component with Alpine.js
+Usage: 
+<div x-data="modal({{ open|default:'false' }})">
+    {% include 'ui/components/modal.html' with title='My Modal' %}
+</div>
+{% endcomment %}
+
+<div
+    x-show="open"
+    @keydown.escape.window="close()"
+    class="modal-container"
+    x-cloak
+>
+    {# Overlay #}
+    <div x-show="open" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="modal-overlay" @click="close()"></div>
+    
+    {# Modal Content #}
+    <div class="relative p-4 w-full max-w-2xl h-full md:h-auto flex items-center justify-center">
+        <div
+            x-show="open"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform scale-90"
+            x-transition:enter-end="opacity-100 transform scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform scale-100"
+            x-transition:leave-end="opacity-0 transform scale-90"
+            class="modal-content"
+            @click.stop
+        >
+            {# Header #}
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    {{ title|default:"Modal" }}
+                </h3>
+                <button type="button" class="text-gray-400 hover:text-gray-500 dark:hover:text-gray-300" @click="close()">
+                    <span class="sr-only">Close</span>
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            {# Body #}
+            <div class="modal-body">
+                {% block modal_body %}
+                {{ body|default:"Modal content goes here." }}
+                {% endblock %}
+            </div>
+            
+            {# Footer #}
+            {% if show_footer|default:True %}
+            <div class="modal-footer">
+                {% block modal_footer %}
+                <button type="button" class="btn btn-secondary" @click="close()">Cancel</button>
+                <button type="button" class="btn btn-primary" {{ confirm_action|default:"" }}>{{ confirm_label|default:"Confirm" }}</button>
+                {% endblock %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

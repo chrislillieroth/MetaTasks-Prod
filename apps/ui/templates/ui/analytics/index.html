@@ -1,0 +1,14 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Analytics{% endblock %}
+
+{% block page_title %}Analytics & Reporting{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% include 'ui/components/empty_state.html' with title='Analytics Coming Soon' description='Detailed usage analytics and reporting will be available soon.' %}
+    </div>
+</div>
+{% endblock %}

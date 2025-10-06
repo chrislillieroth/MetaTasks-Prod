@@ -1,0 +1,48 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Organizations{% endblock %}
+
+{% block page_title %}Organizations{% endblock %}
+
+{% block page_actions %}
+    {% render_button 'New Organization' 'primary' 'md' icon='plus' %}
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% if organizations %}
+        <div class="space-y-4">
+            {% for membership in organizations %}
+            <div class="card hover:shadow-lg transition-shadow">
+                <div class="card-body">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
+                                {{ membership.organization.name }}
+                            </h3>
+                            <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                                {{ membership.organization.description|default:"No description" }}
+                            </p>
+                            <div class="mt-2 flex items-center space-x-2">
+                                {% badge membership.role 'info' %}
+                                <span class="text-sm text-gray-500 dark:text-gray-400">
+                                    Member since {{ membership.created_at|date:"M Y" }}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="ml-4">
+                            <a href="#" class="btn btn-secondary btn-sm">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        {% include 'ui/components/empty_state.html' with title='No organizations' description='You are not a member of any organization yet.' %}
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

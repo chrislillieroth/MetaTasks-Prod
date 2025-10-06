@@ -1,0 +1,90 @@
+{% load static %}
+{% load ui_components %}
+
+<aside 
+    x-show="$store.ui.sidebarOpen || window.innerWidth >= 1024"
+    x-transition:enter="transition ease-out duration-300"
+    x-transition:enter-start="transform -translate-x-full"
+    x-transition:enter-end="transform translate-x-0"
+    x-transition:leave="transition ease-in duration-300"
+    x-transition:leave-start="transform translate-x-0"
+    x-transition:leave-end="transform -translate-x-full"
+    class="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 h-screen sticky top-0 overflow-y-auto"
+    aria-label="Sidebar navigation"
+>
+    <nav class="mt-5 px-2 space-y-1">
+        {# Dashboard #}
+        <a href="{% url 'ui:dashboard' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name == 'dashboard' %}bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}" data-analytics="nav-dashboard">
+            {% icon 'cog' 'mr-3 flex-shrink-0 h-6 w-6' %}
+            Dashboard
+        </a>
+        
+        {# Workflows #}
+        <a href="{% url 'ui:workflows' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name|slice:':9' == 'workflows' %}bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}" data-analytics="nav-workflows">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            Workflows
+        </a>
+        
+        {# Organizations #}
+        <a href="{% url 'ui:organizations' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name|slice:':13' == 'organizations' %}bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}" data-analytics="nav-organizations">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+            </svg>
+            Organizations
+        </a>
+        
+        {# Scheduling #}
+        <a href="{% url 'ui:scheduling' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name|slice:':10' == 'scheduling' %}bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}" data-analytics="nav-scheduling">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Scheduling
+        </a>
+        
+        {# Integrations #}
+        <a href="{% url 'ui:integrations' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md {% if request.resolver_match.url_name|slice:':12' == 'integrations' %}bg-blue-100 dark:bg-blue-900 text-blue-900 dark:text-blue-100{% else %}text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}" data-analytics="nav-integrations">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            Integrations
+        </a>
+        
+        {# Divider #}
+        <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+        
+        {# Admin section (only for admins) #}
+        {% if request.user.is_staff or request.organization and request.organization.memberships.filter(user=request.user, role__in=['owner', 'admin']).exists %}
+        <div class="px-2 py-2">
+            <p class="px-2 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                Administration
+            </p>
+        </div>
+        
+        <a href="{% url 'ui:licensing' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" data-analytics="nav-licensing">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+            Licensing
+        </a>
+        
+        <a href="{% url 'ui:analytics' %}" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" data-analytics="nav-analytics">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+            Analytics
+        </a>
+        {% endif %}
+        
+        {# Help & Support #}
+        <div class="border-t border-gray-200 dark:border-gray-700 my-4"></div>
+        
+        <a href="#" class="group flex items-center px-2 py-2 text-sm font-medium rounded-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700" data-analytics="nav-help">
+            <svg class="mr-3 flex-shrink-0 h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            Help & Support
+        </a>
+    </nav>
+</aside>

@@ -1,0 +1,14 @@
+{% extends 'ui/layouts/base.html' %}
+{% load ui_components %}
+
+{% block title %}Integrations{% endblock %}
+
+{% block page_title %}Integrations{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-body">
+        {% include 'ui/components/empty_state.html' with title='No Integrations Configured' description='Connect external services like CRM, calendar, and SSO.' action_label='Browse Integrations' action_url='/integrations/browse/' %}
+    </div>
+</div>
+{% endblock %}

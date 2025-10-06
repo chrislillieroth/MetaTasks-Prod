@@ -1,0 +1,83 @@
+{% comment %}
+Work Item Row Component (for HTMX updates)
+Usage in template: {% include 'ui/partials/workflows/workitem_row.html' with workitem=item %}
+{% endcomment %}
+
+{% load ui_components %}
+
+<tr 
+    id="workitem-{{ workitem.id }}" 
+    data-workitem-id="{{ workitem.id }}"
+    class="table-row"
+    hx-get="{% url 'ui:workitem_detail' workitem.id %}" 
+    hx-target="#workitem-detail-modal" 
+    hx-swap="innerHTML"
+>
+    <td class="table-cell">
+        <div class="flex items-center">
+            <input type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" 
+                   name="workitem_ids" value="{{ workitem.id }}">
+        </div>
+    </td>
+    <td class="table-cell">
+        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+            {{ workitem.title }}
+        </div>
+        {% if workitem.description %}
+        <div class="text-sm text-gray-500 dark:text-gray-400 truncate max-w-md">
+            {{ workitem.description|truncatewords:15 }}
+        </div>
+        {% endif %}
+    </td>
+    <td class="table-cell">
+        {{ workitem.status|status_badge }}
+    </td>
+    <td class="table-cell">
+        {% if workitem.assigned_to %}
+        <div class="flex items-center">
+            <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                {{ workitem.assigned_to.get_full_name.0|default:workitem.assigned_to.email.0|upper }}
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                    {{ workitem.assigned_to.get_full_name|default:workitem.assigned_to.email }}
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <span class="text-sm text-gray-500 dark:text-gray-400">Unassigned</span>
+        {% endif %}
+    </td>
+    <td class="table-cell">
+        <span class="text-sm text-gray-500 dark:text-gray-400">
+            {{ workitem.created_at|date:"M d, Y" }}
+        </span>
+    </td>
+    <td class="table-cell">
+        <div class="flex items-center space-x-2">
+            <button 
+                type="button" 
+                class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                hx-get="{% url 'ui:workitem_transition' workitem.id %}"
+                hx-target="#transition-panel"
+                hx-swap="innerHTML"
+                data-analytics="workitem-transition"
+            >
+                {% icon 'pencil' 'w-5 h-5' %}
+                <span class="sr-only">Transition</span>
+            </button>
+            <button 
+                type="button" 
+                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                hx-delete="{% url 'ui:workitem_delete' workitem.id %}"
+                hx-confirm="Are you sure you want to delete this work item?"
+                hx-target="#workitem-{{ workitem.id }}"
+                hx-swap="outerHTML swap:1s"
+                data-analytics="workitem-delete"
+            >
+                {% icon 'trash' 'w-5 h-5' %}
+                <span class="sr-only">Delete</span>
+            </button>
+        </div>
+    </td>
+</tr>

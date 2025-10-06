@@ -6,6 +6,7 @@ module.exports = {
     './apps/ui/components/**/*.{html,js}',
     './apps/ui/layouts/**/*.{html,js}',
     './apps/ui/partials/**/*.{html,js}',
+    './apps/ui/templatetags/**/*.py',
   ],
   theme: {
     extend: {
