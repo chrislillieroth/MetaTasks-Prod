@@ -1,0 +1,139 @@
+{% extends "ui/base.html" %}
+{% load static %}
+
+{% block title %}Profile - MetaTasks{% endblock %}
+
+{% block page_header %}
+<div class="pb-5 border-b border-gray-200 dark:border-gray-700">
+    <div class="flex items-center space-x-5">
+        <div class="flex-shrink-0">
+            <div class="relative">
+                <img class="h-16 w-16 rounded-full" 
+                     src="{% static 'images/default-avatar.png' %}" 
+                     alt="{{ user.get_full_name|default:user.username }}">
+                <span class="absolute inset-0 shadow-inner rounded-full" aria-hidden="true"></span>
+            </div>
+        </div>
+        <div>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ user.get_full_name|default:user.username }}</h1>
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ user.email }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block page_content %}
+<div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <!-- Profile Information -->
+    <div class="lg:col-span-2">
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Profile Information</h3>
+            </div>
+            <div class="px-6 py-4 space-y-6">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                    <div>
+                        <label class="form-label">First Name</label>
+                        <input type="text" 
+                               value="{{ user.first_name }}" 
+                               readonly
+                               class="form-input bg-gray-50 dark:bg-gray-700">
+                    </div>
+                    <div>
+                        <label class="form-label">Last Name</label>
+                        <input type="text" 
+                               value="{{ user.last_name }}" 
+                               readonly
+                               class="form-input bg-gray-50 dark:bg-gray-700">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">Email Address</label>
+                    <input type="email" 
+                           value="{{ user.email }}" 
+                           readonly
+                           class="form-input bg-gray-50 dark:bg-gray-700">
+                </div>
+                <div>
+                    <label class="form-label">Username</label>
+                    <input type="text" 
+                           value="{{ user.username }}" 
+                           readonly
+                           class="form-input bg-gray-50 dark:bg-gray-700">
+                </div>
+                <div>
+                    <label class="form-label">Date Joined</label>
+                    <input type="text" 
+                           value="{{ user.date_joined|date:'F d, Y' }}" 
+                           readonly
+                           class="form-input bg-gray-50 dark:bg-gray-700">
+                </div>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                <a href="{% url 'accounts:settings' %}" class="btn-primary">
+                    Edit Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account Stats -->
+    <div class="space-y-6">
+        <!-- Activity Summary -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Activity Summary</h3>
+            </div>
+            <div class="px-6 py-4 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Workflows Created</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">12</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Tasks Completed</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">89</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Organizations</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">3</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-500 dark:text-gray-400">Last Login</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">{{ user.last_login|date:'M d, Y' }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white">Quick Actions</h3>
+            </div>
+            <div class="px-6 py-4 space-y-3">
+                <a href="{% url 'accounts:settings' %}" 
+                   class="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Account Settings
+                </a>
+                <a href="{% url 'workflows:create' %}" 
+                   class="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    Create Workflow
+                </a>
+                <a href="{% url 'organizations:create' %}" 
+                   class="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    Create Organization
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

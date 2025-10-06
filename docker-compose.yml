@@ -26,9 +26,11 @@ services:
     # Wait for Postgres to become available, run migrations, then start Django
     command: >-
       bash -c "
-        python scripts/wait_for_db.py && \
-        echo 'Applying migrations...' && python manage.py migrate --noinput && \
-        echo 'Starting server...' && python manage.py runserver 0.0.0.0:8000
+        echo 'Waiting for database...';
+        python scripts/wait_for_db.py;
+        echo 'Applying migrations...'; python manage.py migrate --noinput;
+        echo 'Collecting static files...'; python manage.py collectstatic --noinput;
+        echo 'Starting server...'; python manage.py runserver 0.0.0.0:8000
       "
     volumes:
       - .:/app

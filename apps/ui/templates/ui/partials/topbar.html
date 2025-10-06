@@ -1,0 +1,230 @@
+{% load static %}
+<div class="sticky top-0 z-10 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 lg:hidden">
+    <div class="flex items-center justify-between h-16 px-4">
+        <!-- Mobile menu button -->
+        <button @click="sidebarOpen = true" 
+                class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+        
+        <!-- Logo -->
+        <div class="flex items-center">
+            <img class="h-8 w-auto" src="{% static 'icons/logo.svg' %}" alt="MetaTasks">
+            <h1 class="ml-2 text-xl font-semibold text-gray-900 dark:text-white">MetaTasks</h1>
+        </div>
+        
+        <!-- Right side buttons -->
+        <div class="flex items-center space-x-2">
+            <!-- Notifications -->
+            <button @click="notificationsOpen = !notificationsOpen" 
+                    class="p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 4a7 7 0 017 7v4.29l2 2V19H4v-1.71l2-2V11a7 7 0 017-7z" />
+                </svg>
+                <!-- Notification badge -->
+                <span x-show="unreadNotifications > 0" 
+                      class="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                      x-text="unreadNotifications > 9 ? '9+' : unreadNotifications"></span>
+            </button>
+            
+            <!-- User menu -->
+            <div x-data="{ userMenuOpen: false }" class="relative">
+                <button @click="userMenuOpen = !userMenuOpen" 
+                        class="flex items-center p-2 rounded-full text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <img class="h-8 w-8 rounded-full" 
+                         src="{% static 'images/default-avatar.png' %}" 
+                         alt="{{ user.get_full_name|default:user.username }}">
+                </button>
+                
+                <!-- User dropdown -->
+                <div x-show="userMenuOpen" 
+                     x-transition:enter="transition ease-out duration-100"
+                     x-transition:enter-start="opacity-0 scale-95"
+                     x-transition:enter-end="opacity-100 scale-100"
+                     x-transition:leave="transition ease-in duration-75"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     @click.away="userMenuOpen = false"
+                     class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50">
+                    <a href="{% url 'accounts:profile' %}" 
+                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                        Your Profile
+                    </a>
+                    <a href="{% url 'accounts:settings' %}" 
+                       class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                        Settings
+                    </a>
+                    <div class="border-t border-gray-100 dark:border-gray-600"></div>
+                    <form method="post" action="{% url 'accounts:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                            Sign out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Desktop topbar -->
+<div class="hidden lg:flex lg:items-center lg:justify-between h-16 px-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <!-- Search bar -->
+    <div class="flex-1 max-w-lg">
+        <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+            </div>
+            <input x-model="searchQuery"
+                   @keydown.enter="performSearch()"
+                   type="text" 
+                   placeholder="Search workflows, organizations..." 
+                   class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+    </div>
+    
+    <!-- Right side actions -->
+    <div class="flex items-center space-x-4 ml-4">
+        <!-- Dark mode toggle -->
+        <button @click="toggleDarkMode()" 
+                class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <svg x-show="!darkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <svg x-show="darkMode" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+        </button>
+        
+        <!-- Quick actions dropdown -->
+        <div x-data="{ quickActionsOpen: false }" class="relative">
+            <button @click="quickActionsOpen = !quickActionsOpen" 
+                    class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+            </button>
+            
+            <div x-show="quickActionsOpen" 
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 @click.away="quickActionsOpen = false"
+                 class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50">
+                <a href="{% url 'workflows:create' %}" 
+                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H9z" />
+                    </svg>
+                    New Workflow
+                </a>
+                <a href="{% url 'organizations:create' %}" 
+                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                    </svg>
+                    New Organization
+                </a>
+                <a href="{% url 'scheduling:create' %}" 
+                   class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    <svg class="mr-3 h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Schedule Task
+                </a>
+            </div>
+        </div>
+        
+        <!-- Notifications -->
+        <div x-data="{ notificationsOpen: false }" class="relative">
+            <button @click="notificationsOpen = !notificationsOpen" 
+                    class="p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 relative">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM11 4a7 7 0 017 7v4.29l2 2V19H4v-1.71l2-2V11a7 7 0 017-7z" />
+                </svg>
+                <span x-show="unreadNotifications > 0" 
+                      class="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                      x-text="unreadNotifications > 9 ? '9+' : unreadNotifications"></span>
+            </button>
+            
+            <!-- Notifications dropdown -->
+            <div x-show="notificationsOpen" 
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 @click.away="notificationsOpen = false"
+                 class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-700 rounded-md shadow-lg z-50">
+                <div class="p-4 border-b border-gray-200 dark:border-gray-600">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-white">Notifications</h3>
+                </div>
+                <div class="max-h-64 overflow-y-auto">
+                    <!-- Notification items will be loaded via HTMX -->
+                    <div hx-get="{% url 'ui:notifications_api' %}" 
+                         hx-trigger="revealed"
+                         class="p-4 text-center text-gray-500 dark:text-gray-400">
+                        Loading notifications...
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-200 dark:border-gray-600">
+                    <a href="#" 
+                       class="text-sm font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                        View all notifications
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User profile -->
+        <div x-data="{ userMenuOpen: false }" class="relative">
+            <button @click="userMenuOpen = !userMenuOpen" 
+                    class="flex items-center space-x-3 p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <img class="h-8 w-8 rounded-full" 
+                     src="{% static 'images/default-avatar.png' %}" 
+                     alt="Demo User">
+                <div class="hidden xl:block text-left">
+                    <p class="text-sm font-medium text-gray-900 dark:text-white">Demo User</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Personal</p>
+                </div>
+            </button>
+            
+            <div x-show="userMenuOpen" 
+                 x-transition:enter="transition ease-out duration-100"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 x-transition:leave="transition ease-in duration-75"
+                 x-transition:leave-start="opacity-100 scale-100"
+                 x-transition:leave-end="opacity-0 scale-95"
+                 @click.away="userMenuOpen = false"
+                 class="absolute right-0 mt-2 w-48 bg-white dark:bg-gray-700 rounded-md shadow-lg py-1 z-50">
+                <a href="{% url 'ui:profile' %}" 
+                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    Your Profile
+                </a>
+                <a href="{% url 'ui:settings' %}" 
+                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    Settings
+                </a>
+                <a href="#" 
+                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    Billing
+                </a>
+                <div class="border-t border-gray-100 dark:border-gray-600"></div>
+                <a href="#" 
+                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600">
+                    Sign out
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

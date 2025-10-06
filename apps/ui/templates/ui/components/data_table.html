@@ -1,0 +1,393 @@
+<!-- Data Table Component -->
+{% load static %}
+
+<div class="flex flex-col" x-data="dataTable()">
+    <!-- Table controls -->
+    <div class="py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+        <!-- Search and filters -->
+        <div class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <!-- Search -->
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <input x-model="search" 
+                       @input.debounce.300ms="performSearch()"
+                       type="text" 
+                       placeholder="Search..."
+                       class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            
+            <!-- Status filter -->
+            <select x-model="statusFilter" 
+                    @change="applyFilters()"
+                    class="form-select w-full sm:w-auto">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="inactive">Inactive</option>
+                <option value="pending">Pending</option>
+            </select>
+            
+            <!-- Date range filter -->
+            <div class="flex items-center space-x-2">
+                <input x-model="dateFrom" 
+                       @change="applyFilters()"
+                       type="date" 
+                       class="form-input">
+                <span class="text-gray-500 dark:text-gray-400">to</span>
+                <input x-model="dateTo" 
+                       @change="applyFilters()"
+                       type="date" 
+                       class="form-input">
+            </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+            <!-- Bulk actions -->
+            <div x-show="selectedItems.length > 0" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100"
+                 class="flex items-center space-x-2">
+                <span class="text-sm text-gray-700 dark:text-gray-300">
+                    <span x-text="selectedItems.length"></span> selected
+                </span>
+                <button @click="bulkDelete()" 
+                        class="btn-danger btn-sm">
+                    Delete Selected
+                </button>
+            </div>
+            
+            <!-- Export button -->
+            <button @click="exportData()" 
+                    class="btn-secondary">
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Export
+            </button>
+            
+            <!-- Add new button -->
+            <a href="{% block add_url %}#{% endblock %}" class="btn-primary">
+                <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                {% block add_text %}Add New{% endblock %}
+            </a>
+        </div>
+    </div>
+    
+    <!-- Table -->
+    <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-800">
+                    <tr>
+                        <!-- Select all checkbox -->
+                        <th scope="col" class="relative w-12 px-6 sm:w-16 sm:px-8">
+                            <input type="checkbox" 
+                                   x-model="selectAll"
+                                   @change="toggleSelectAll()"
+                                   class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 sm:left-6">
+                        </th>
+                        
+                        {% block table_headers %}
+                        <!-- Table headers go here -->
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700" 
+                            @click="sortBy('name')">
+                            <div class="flex items-center space-x-1">
+                                <span>Name</span>
+                                <svg x-show="sortField === 'name'" 
+                                     class="h-4 w-4 text-gray-400"
+                                     :class="{ 'rotate-180': sortDirection === 'desc' }"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                                </svg>
+                            </div>
+                        </th>
+                        {% endblock %}
+                        
+                        <!-- Actions column -->
+                        <th scope="col" class="relative px-6 py-3">
+                            <span class="sr-only">Actions</span>
+                        </th>
+                    </tr>
+                </thead>
+                
+                <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-800">
+                    <!-- Loading state -->
+                    <tr x-show="loading">
+                        <td colspan="100%" class="px-6 py-4 text-center">
+                            <div class="flex items-center justify-center">
+                                <svg class="animate-spin h-5 w-5 text-blue-600 mr-3" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Loading...
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Empty state -->
+                    <tr x-show="!loading && items.length === 0">
+                        <td colspan="100%" class="px-6 py-12 text-center">
+                            <div class="text-gray-500 dark:text-gray-400">
+                                <svg class="mx-auto h-12 w-12 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v6a2 2 0 002 2h6a2 2 0 002-2V7a2 2 0 00-2-2H9z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4" />
+                                </svg>
+                                <h3 class="text-sm font-medium text-gray-900 dark:text-white mb-1">{% block empty_title %}No items found{% endblock %}</h3>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{% block empty_description %}Get started by creating a new item.{% endblock %}</p>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Data rows -->
+                    <template x-for="item in items" :key="item.id">
+                        <tr class="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors duration-200">
+                            <!-- Checkbox -->
+                            <td class="relative w-12 px-6 sm:w-16 sm:px-8">
+                                <input type="checkbox" 
+                                       :value="item.id"
+                                       x-model="selectedItems"
+                                       class="absolute left-4 top-1/2 -mt-2 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 sm:left-6">
+                            </td>
+                            
+                            {% block table_row %}
+                            <!-- Table row content goes here -->
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100" 
+                                x-text="item.name"></td>
+                            {% endblock %}
+                            
+                            <!-- Actions -->
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <div class="flex items-center justify-end space-x-2">
+                                    <button @click="editItem(item)" 
+                                            class="text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300">
+                                        Edit
+                                    </button>
+                                    <button @click="deleteItem(item)" 
+                                            class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                        Delete
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="bg-white dark:bg-gray-900 px-4 py-3 border-t border-gray-200 dark:border-gray-700 sm:px-6">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <p class="text-sm text-gray-700 dark:text-gray-300">
+                        Showing <span x-text="((currentPage - 1) * itemsPerPage) + 1"></span> 
+                        to <span x-text="Math.min(currentPage * itemsPerPage, totalItems)"></span> 
+                        of <span x-text="totalItems"></span> results
+                    </p>
+                </div>
+                
+                <div class="flex items-center space-x-2">
+                    <button @click="previousPage()" 
+                            :disabled="currentPage === 1"
+                            class="btn-secondary btn-sm" 
+                            :class="{ 'opacity-50 cursor-not-allowed': currentPage === 1 }">
+                        Previous
+                    </button>
+                    
+                    <div class="flex items-center space-x-1">
+                        <template x-for="page in visiblePages" :key="page">
+                            <button @click="goToPage(page)" 
+                                    class="px-3 py-1 text-sm rounded-md"
+                                    :class="page === currentPage ? 'bg-blue-600 text-white' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'"
+                                    x-text="page"></button>
+                        </template>
+                    </div>
+                    
+                    <button @click="nextPage()" 
+                            :disabled="currentPage === totalPages"
+                            class="btn-secondary btn-sm"
+                            :class="{ 'opacity-50 cursor-not-allowed': currentPage === totalPages }">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function dataTable() {
+    return {
+        items: [],
+        loading: false,
+        search: '',
+        statusFilter: '',
+        dateFrom: '',
+        dateTo: '',
+        selectedItems: [],
+        selectAll: false,
+        sortField: '',
+        sortDirection: 'asc',
+        currentPage: 1,
+        itemsPerPage: 10,
+        totalItems: 0,
+        totalPages: 0,
+        
+        get visiblePages() {
+            const range = 2;
+            const start = Math.max(1, this.currentPage - range);
+            const end = Math.min(this.totalPages, this.currentPage + range);
+            const pages = [];
+            
+            for (let i = start; i <= end; i++) {
+                pages.push(i);
+            }
+            
+            return pages;
+        },
+        
+        async init() {
+            await this.fetchData();
+        },
+        
+        async fetchData() {
+            this.loading = true;
+            
+            try {
+                const params = new URLSearchParams({
+                    page: this.currentPage,
+                    search: this.search,
+                    status: this.statusFilter,
+                    date_from: this.dateFrom,
+                    date_to: this.dateTo,
+                    sort_field: this.sortField,
+                    sort_direction: this.sortDirection
+                });
+                
+                const response = await fetch(`{% block api_url %}{% endblock %}?${params}`);
+                const data = await response.json();
+                
+                this.items = data.results || [];
+                this.totalItems = data.count || 0;
+                this.totalPages = Math.ceil(this.totalItems / this.itemsPerPage);
+                
+            } catch (error) {
+                console.error('Failed to fetch data:', error);
+                this.$dispatch('show-toast', { message: 'Failed to load data', type: 'error' });
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        async performSearch() {
+            this.currentPage = 1;
+            await this.fetchData();
+        },
+        
+        async applyFilters() {
+            this.currentPage = 1;
+            await this.fetchData();
+        },
+        
+        async sortBy(field) {
+            if (this.sortField === field) {
+                this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+            } else {
+                this.sortField = field;
+                this.sortDirection = 'asc';
+            }
+            
+            await this.fetchData();
+        },
+        
+        toggleSelectAll() {
+            if (this.selectAll) {
+                this.selectedItems = this.items.map(item => item.id);
+            } else {
+                this.selectedItems = [];
+            }
+        },
+        
+        async goToPage(page) {
+            this.currentPage = page;
+            await this.fetchData();
+        },
+        
+        async previousPage() {
+            if (this.currentPage > 1) {
+                this.currentPage--;
+                await this.fetchData();
+            }
+        },
+        
+        async nextPage() {
+            if (this.currentPage < this.totalPages) {
+                this.currentPage++;
+                await this.fetchData();
+            }
+        },
+        
+        editItem(item) {
+            window.location.href = `{% block edit_url_pattern %}{% endblock %}`.replace('0', item.id);
+        },
+        
+        async deleteItem(item) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                try {
+                    await fetch(`{% block delete_url_pattern %}{% endblock %}`.replace('0', item.id), {
+                        method: 'DELETE'
+                    });
+                    
+                    await this.fetchData();
+                    this.$dispatch('show-toast', { message: 'Item deleted successfully', type: 'success' });
+                } catch (error) {
+                    console.error('Failed to delete item:', error);
+                    this.$dispatch('show-toast', { message: 'Failed to delete item', type: 'error' });
+                }
+            }
+        },
+        
+        async bulkDelete() {
+            if (this.selectedItems.length === 0) return;
+            
+            if (confirm(`Are you sure you want to delete ${this.selectedItems.length} items?`)) {
+                try {
+                    await fetch('{% block bulk_delete_url %}{% endblock %}', {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ ids: this.selectedItems })
+                    });
+                    
+                    this.selectedItems = [];
+                    this.selectAll = false;
+                    await this.fetchData();
+                    this.$dispatch('show-toast', { message: 'Items deleted successfully', type: 'success' });
+                } catch (error) {
+                    console.error('Failed to delete items:', error);
+                    this.$dispatch('show-toast', { message: 'Failed to delete items', type: 'error' });
+                }
+            }
+        },
+        
+        exportData() {
+            const params = new URLSearchParams({
+                search: this.search,
+                status: this.statusFilter,
+                date_from: this.dateFrom,
+                date_to: this.dateTo,
+                format: 'csv'
+            });
+            
+            window.open(`{% block export_url %}{% endblock %}?${params}`, '_blank');
+        }
+    };
+}
+</script>
